@@ -6,15 +6,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       
-    - name: Build with Buildozer
-      uses: artem-sobolev/buildozer-action@v1
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        buildozer_version: stable
+        python-version: '3.9'
         
+    - name: Install Buildozer dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip git zip unzip openjdk-8-jdk autoconf libtool pkg-config zlib1g-dev
+        
+    - name: Install Buildozer
+      run: pip install buildozer cython
+        
+    - name: Build APK with Buildozer
+      run: buildozer android debug
+      
     - name: Upload APK
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: app-apk
+        name: wiretun-vpn-apk
         path: bin/*.apk
+        retention-days: 7

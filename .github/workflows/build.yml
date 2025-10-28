@@ -13,20 +13,35 @@ jobs:
       with:
         python-version: '3.9'
         
-    - name: Install Buildozer dependencies
+    - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-pip git zip unzip openjdk-8-jdk autoconf libtool pkg-config zlib1g-dev
-        
-    - name: Install Buildozer
-      run: pip install buildozer cython
+        sudo apt-get install -y \
+          python3-pip \
+          git \
+          zip \
+          unzip \
+          openjdk-8-jdk \
+          autoconf \
+          libtool \
+          pkg-config \
+          zlib1g-dev \
+          libncurses5-dev
+          
+    - name: Install Python dependencies
+      run: |
+        pip install --upgrade pip
+        pip install buildozer cython virtualenv
         
     - name: Build APK with Buildozer
-      run: buildozer android debug
-      
-    - name: Upload APK
+      run: |
+        buildozer android clean
+        buildozer android debug
+        echo "Build completed!"
+        
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: wiretun-vpn-apk
+        name: wiretun-vpn-app
         path: bin/*.apk
-        retention-days: 7
+        retention-days: 30
